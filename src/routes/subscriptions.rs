@@ -30,6 +30,7 @@ pub async fn subscribe(form: web::Form<FormData>, pool: web::Data<PgPool>) -> Ht
     skip(form, pool)
 )]
 pub async fn insert_subscriber(pool: &PgPool, form: &FormData) -> Result<(), sqlx::Error> {
+    tracing::info!("Inserting a new subscriber: Email: {:?}, Name: {:?}", &form.email, &form.name);
     sqlx::query!(
         r#"
     INSERT INTO subscriptions (id, email, name, subscribed_at)
