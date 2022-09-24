@@ -23,8 +23,13 @@ impl AsRef<str> for SubscriberEmail {
 mod tests {
     use super::SubscriberEmail;
     use claim::assert_err;
-    use fake::faker::internet::en::SafeEmail;
+    use fake::faker::internet::fr_fr::SafeEmail;
+    use fake::locales::*;
     use fake::Fake;
+    use quickcheck::{Arbitrary, Gen};
+    use rand::prelude::*;
+    // using `faker` module with locales
+    use fake::faker::name::raw::*;
 
     #[test]
     fn empty_string_is_rejected() {
@@ -47,9 +52,10 @@ mod tests {
     #[derive(Debug, Clone)]
     struct ValidEmailFixture(pub String);
 
-    impl quickcheck::Arbitrary for ValidEmailFixture {
-        fn arbitrary<G: quickcheck::Gen>(g: &mut G) -> Self {
-            let email = SafeEmail().fake_with_rng(g);
+    impl Arbitrary for ValidEmailFixture {
+        fn arbitrary(g: &mut Gen) -> Self {
+            let mut rng = StdRng::seed_from_u64(u64::arbitrary(g));
+            let email = SafeEmail().fake_with_rng(&mut rng);
             Self(email)
         }
     }
